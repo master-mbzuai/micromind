@@ -426,7 +426,7 @@ class MicroMind(ABC):
                     loss = self.compute_loss(model_out, batch)
 
                     self.accelerator.backward(loss)
-                    self.opt.step()
+                    self.opt.step()                    
 
                     for m in self.metrics:
                         m(model_out, batch, Stage.train, self.device)
@@ -465,6 +465,7 @@ class MicroMind(ABC):
                     val_metrics = train_metrics.update(
                         {"val_loss": loss_epoch / (idx + 1)}
                     )
+                self.lr_sched.step(loss_epoch / (idx + 1))                
 
                 if e >= 1 and self.debug:
                     break
