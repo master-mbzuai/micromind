@@ -553,4 +553,4 @@ class MicroMind(ABC):
 
         logger.info(s_out)
 
-        return None
+        return s_out
