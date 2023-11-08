@@ -32,6 +32,11 @@ def parse_arguments():
         "--model_name",
         default="model01",
         )
+    parser.add_argument(
+        "--epochs",
+        default=50,
+        type=int
+    )
 
     args = parser.parse_args()
     return args
