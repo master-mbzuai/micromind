@@ -23,6 +23,15 @@ def parse_arguments():
         action="store_true",
         help="Run in debug mode to check train and validation steps.",
     )
+    parser.add_argument(
+        "--d",
+        default="0",
+        type=int,
+        )
+    parser.add_argument(
+        "--model_name",
+        default="model01",
+        )
 
     args = parser.parse_args()
     return args
