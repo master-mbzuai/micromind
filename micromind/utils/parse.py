@@ -30,7 +30,7 @@ def parse_arguments():
         )
     parser.add_argument(
         "--model_name",
-        default="model01",
+        default="original",
         )
     parser.add_argument(
         "--epochs",

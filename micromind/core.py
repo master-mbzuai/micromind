@@ -281,6 +281,7 @@ class MicroMind(ABC):
            (not implemented yet). : Tuple[torch.optim.Adam, None]
 
         """
+        print("passing by here")
         assert self.hparams.opt in [
             "adam",
             "sgd",
@@ -288,7 +289,7 @@ class MicroMind(ABC):
         if self.hparams.opt == "adam":
             opt = torch.optim.Adam(self.modules.parameters(), self.hparams.lr)
         elif self.hparams.opt == "sgd":
-            opt = torch.optim.SGD(self.modules.parameters(), self.hparams.lr)
+            opt = torch.optim.SGD(self.modules.parameters(), self.hparams.lr)        
         return opt, None  # None is for learning rate sched
 
     def __call__(self, *x, **xv):
@@ -435,6 +436,7 @@ class MicroMind(ABC):
                     }
 
                     running_train.update({"train_loss": loss_epoch / (idx + 1)})
+                    running_train.update({"lr": self.opt.param_groups[0]['lr']})
 
                     loss_epoch += loss.item()
                     pbar.set_postfix(**running_train)
