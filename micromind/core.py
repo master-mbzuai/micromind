@@ -281,7 +281,6 @@ class MicroMind(ABC):
            (not implemented yet). : Tuple[torch.optim.Adam, None]
 
         """
-        print("passing by here")
         assert self.hparams.opt in [
             "adam",
             "sgd",
@@ -465,7 +464,7 @@ class MicroMind(ABC):
                     val_metrics = train_metrics.update(
                         {"val_loss": loss_epoch / (idx + 1)}
                     )
-                self.lr_sched.step(loss_epoch / (idx + 1))                
+                #self.lr_sched.step(loss_epoch / (idx + 1))                
 
                 if e >= 1 and self.debug:
                     break
