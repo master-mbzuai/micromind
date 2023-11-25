@@ -4,7 +4,7 @@ import argparse
 def parse_arguments():
     parser = argparse.ArgumentParser(description="General configuration for micromind.")
 
-    parser.add_argument("--lr", type=float, default=0.001, help="Learning rate.")
+    parser.add_argument("--lr", type=float, default=0.0001, help="Learning rate.")
     parser.add_argument(
         "--optimizer",
         dest="opt",
@@ -13,7 +13,7 @@ def parse_arguments():
         help="Optimizer name.",
     )
     parser.add_argument(
-        "--experiment_name", default="exp", help="Name of the experiment."
+        "--experiment_name", default="pca", help="Name of the experiment."
     )
     parser.add_argument(
         "--output_folder", default="results", help="Output folder path."
@@ -30,7 +30,7 @@ def parse_arguments():
         )
     parser.add_argument(
         "--model_name",
-        default="original",
+        default="original_pre_pca",
         )
     parser.add_argument(
         "--epochs",

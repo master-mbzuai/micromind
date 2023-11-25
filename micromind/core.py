@@ -21,6 +21,8 @@ import os
 from .utils.helpers import select_and_load_checkpoint, get_random_string
 from .utils.checkpointer import Checkpointer
 
+# import wandb
+
 # This is used ONLY if you are not using argparse to get the hparams
 default_cfg = {
     "output_folder": "results",
@@ -29,7 +31,6 @@ default_cfg = {
     "lr": 0.001,  # this is ignored if you are overriding the configure_optimizers
     "debug": False,
 }
-
 
 @dataclass
 class Stage:
@@ -301,6 +302,15 @@ class MicroMind(ABC):
 
         This function gets executed at the beginning of every training.
         """
+
+        ## init wandb
+
+        # wandb.init(
+        #     project="ai-project",
+        #     name = self.hparams.experiment_name,
+        #     config=self.hparams
+        # )
+
         self.experiment_folder = os.path.join(
             self.hparams.output_folder, self.hparams.experiment_name
         )
@@ -417,7 +427,7 @@ class MicroMind(ABC):
                 self.modules.train()
                 for idx, batch in enumerate(pbar):
                     if isinstance(batch, list):
-                        batch = [b.to(self.device) for b in batch]
+                        batch = [b.to(self.device) for b in batch]                    
 
                     self.opt.zero_grad()
 
@@ -435,7 +445,7 @@ class MicroMind(ABC):
                     }
 
                     running_train.update({"train_loss": loss_epoch / (idx + 1)})
-                    running_train.update({"lr": self.opt.param_groups[0]['lr']})
+                    running_train.update({"lr": self.opt.param_groups[0]['lr']})                
 
                     loss_epoch += loss.item()
                     pbar.set_postfix(**running_train)
@@ -449,9 +459,15 @@ class MicroMind(ABC):
                     "train_" + m.name: m.reduce(Stage.train, True) for m in self.metrics
                 }
                 train_metrics.update({"train_loss": loss_epoch / (idx + 1)})
+                train_metrics.update({"lr": self.opt.param_groups[0]['lr']})                
 
                 if "val" in datasets:
                     val_metrics = self.validate()
+
+                    #wandb
+                    # wandb.log(train_metrics)
+                    # wandb.log(val_metrics)
+
                     if self.accelerator.is_local_main_process:
                         self.checkpointer(
                             self,
@@ -463,8 +479,9 @@ class MicroMind(ABC):
                 else:
                     val_metrics = train_metrics.update(
                         {"val_loss": loss_epoch / (idx + 1)}
-                    )
-                #self.lr_sched.step(loss_epoch / (idx + 1))                
+                    )                            
+
+                self.lr_sched.step()
 
                 if e >= 1 and self.debug:
                     break
@@ -506,7 +523,7 @@ class MicroMind(ABC):
                     break
 
         val_metrics = {"val_" + m.name: m.reduce(Stage.val, True) for m in self.metrics}
-        val_metrics.update({"val_loss": loss_epoch / (idx + 1)})
+        val_metrics.update({"val_loss": loss_epoch / (idx + 1)})        
 
         pbar.close()
 
